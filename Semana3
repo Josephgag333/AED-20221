@@ -1,0 +1,121 @@
+#include<iostream> 
+using namespace std;
+class Lista {
+	class Nodo {
+	public:
+		int elemento;
+		Nodo* sig;
+		Nodo(int e = 0) { sig = nullptr; elemento = e; }
+	}*inicio;
+	size_t cantidad;
+public:
+	Lista() {
+		inicio = nullptr;
+		cantidad = 0;
+	}
+	//1-obtener objeto en posicion = at()
+	void push_front(int e) {
+		//creamos Nodo<->Vagon
+		Nodo* n = new Nodo(e);
+		if (cantidad == 0)
+			inicio = n;//enlazo al primer vagon || nodo
+		else {
+			n->sig = inicio;
+			inicio = n;
+		}
+		++cantidad;
+	}
+	//3-eliminar al inicio
+	void eliminar_inicio() {
+		//creamos Nodo<->Vagon
+		if (cantidad == 0)return;
+		if (cantidad == 1) { delete inicio; inicio = nullptr; }
+		else { Nodo* n = inicio; inicio = inicio->sig; delete n; }
+		--cantidad;
+	}
+	//2-eliminar en posicion(n), 
+	Nodo* pop() {
+		//creamos Nodo<->Vagon
+		if (cantidad == 0)return nullptr;
+		if (cantidad == 1) { --cantidad; Nodo* n = inicio; inicio = nullptr; return n; }
+		else { Nodo* n = inicio; --cantidad; inicio = inicio->sig; return n; }
+
+	}
+	//6-buscar por valor(n)
+	Nodo* Buscar_valor(int dato) {
+		//creamos Nodo<->Vagon
+		if (inicio != nullptr) {
+			Nodo* n = inicio;
+			if (n->elemento == dato) { return n; }
+			while (n->sig != nullptr) {
+				n = n->sig;
+				if (n->elemento == dato) { return n; }
+			}
+		}
+		return nullptr;
+	}
+	//5-ordenar elementos(n2)
+	void ordenar() {
+		if (inicio != nullptr) {
+			Nodo* i = inicio;
+			while (i->sig != nullptr) {
+				Nodo* j = i->sig;
+				while (j->sig != nullptr) {
+					if (i->elemento < j->elemento) {
+						int aux = i->elemento;
+						i->elemento = j->elemento;
+						j->elemento = aux;
+					}
+					j = j->sig;
+				}
+				i = i->sig;
+			}
+		}
+	}
+	void print() {
+		Nodo* aux = inicio;
+		while (aux != nullptr) {//mientras no lleguemos al final de la lista
+			cout << aux->elemento << " " << endl;
+			aux = aux->sig;
+		}
+	}
+	//10-listar de forma recursiva
+	template<typename T>
+	void aplicar_a_todos(T lambda) {
+		Nodo* aux = inicio;
+		while (aux != nullptr) {//mientras no lleguemos al final de la lista
+			lambda(aux->elemento);
+			aux = aux->sig;
+		}
+	}
+	//9-listar con uso de lambdas
+	template<typename T>
+	void aplicar_a_todos_rec(T lambda, Nodo* actual) {
+		Nodo* aux;
+		if (actual == nullptr)aux = inicio;
+		else  aux = actual;
+		lambda(aux->elemento);
+		if (aux->sig == nullptr)return;
+		aplicar_a_todos_rec(lambda, aux->sig);
+	}
+	//7-invertir lista(n2)
+	Lista voltear() {
+		Lista x;//constructor
+		while (inicio != nullptr) {//(1*n)
+			x.push_front(pop()->elemento);//(2+pushfront+pop)*n
+		}
+		return x;//1
+	}
+};
+void main() {
+	Lista l;//contructor
+	for (size_t i = 0; i < 30; i++) {
+		l.push_front(i);
+	}
+	l.aplicar_a_todos_rec(
+		[](int a)->void {cout << a << "\t"; }
+	, nullptr);
+	l = l.voltear(); cout << endl;
+	l.aplicar_a_todos_rec([](int a)->void {cout << a << "\t"; }, nullptr);
+	cout << " ";//1
+}
